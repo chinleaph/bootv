@@ -1,7 +1,11 @@
 package com.bootx.bootv;
 
 import com.bootx.bootv.bean.TA;
+import com.bootx.bootv.config.AopConfig;
+import com.bootx.bootv.service.DemoMethodService;
+import com.bootx.bootv.service.DemoService;
 import com.yeepay.shade.com.google.common.collect.Lists;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,5 +48,15 @@ public class HelloController {
         for (URL url : urls) {
             System.out.println(url);
         }
+    }
+
+    @RequestMapping("/aop")
+    public void aopDemo() {
+//        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AopConfig.class);
+//        DemoService demoService = context.getBean(DemoService.class);
+//        demoService.addTail();
+//        DemoMethodService demoMethodService = context.getBean(DemoMethodService.class);
+//        demoMethodService.addHat();
+//        context.close();
     }
 }
