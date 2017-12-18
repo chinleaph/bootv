@@ -5,12 +5,18 @@ import com.bootx.bootv.commen.DateHelper;
 import com.bootx.bootv.commen.YeepayEnum;
 import com.bootx.bootv.service.YeepayService;
 import com.mysql.jdbc.StringUtils;
+import com.yeepay.g3.facade.yop.ca.dto.DigitalEnvelopeDTO;
+import com.yeepay.g3.facade.yop.ca.enums.CertTypeEnum;
+import com.yeepay.g3.frame.yop.ca.DigitalEnvelopeUtils;
+import com.yeepay.g3.sdk.yop.utils.InternalConfig;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.ws.rs.PUT;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.*;
 
 @RestController
@@ -194,5 +200,31 @@ public class YeepayController {
         String jsonResult = JSONObject.toJSONString(yopresponsemap);
         System.out.println("支付结果：" + jsonResult);
         return jsonResult;
+    }
+
+    @RequestMapping(value = "/yeepay/notify", method = RequestMethod.POST)
+    public String notify(@RequestBody String params) {
+        try {
+//            String response = params.replaceAll("response=E_", "");
+            String response = params;
+            //开始解密
+            Map<String,String> jsonMap  = new HashMap<>();
+            DigitalEnvelopeDTO dto = new DigitalEnvelopeDTO();
+            dto.setCipherText(response);
+            //InternalConfig internalConfig = InternalConfig.Factory.getInternalConfig();
+            PrivateKey privateKey = InternalConfig.getISVPrivateKey(CertTypeEnum.RSA2048);
+            System.out.println("privateKey: "+privateKey);
+            PublicKey publicKey = InternalConfig.getYopPublicKey(CertTypeEnum.RSA2048);
+            System.out.println("publicKey: "+publicKey);
+
+            dto = DigitalEnvelopeUtils.decrypt(dto, privateKey, publicKey);
+            System.out.println("-------:"+dto.getPlainText());
+            params = dto.getPlainText();
+//            jsonMap = parseResponse(dto.getPlainText());
+//            System.out.println(jsonMap);
+        } catch (Exception e) {
+            throw new RuntimeException("回调解密失败！");
+        }
+        return params;
     }
 }

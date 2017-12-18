@@ -36,4 +36,9 @@ public class GradeController {
         gradeService.defaultRemark(grade);
         return grade;
     }
+
+    @RequestMapping("/showaop")
+    public String showAop() {
+        return "month moon moo";
+    }
 }
